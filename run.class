@@ -1,14 +1,5 @@
-sic  dele N253_CO_TMB.45m
-file out N253_CO_TMB.45m s
-lmv  N253_CO_TMB.45m 
-
-
-file in b_receptors_class.30m
-
-find
-get f 
-
-
-file in  N253_CO_TMB.45m
-find 
-
+! CO data: 
+! Nobeyama CO atlas survey
+! http://www.nro.nao.ac.jp/~nro45mrt/download/COatlas/data/n253/N253RD_TMB.FITS.gz
+@ run0.class  ! align the CO data to the HCN data 
+@ run1.class  ! baseline subtraction, and qualify the data, output qualify.dat 
