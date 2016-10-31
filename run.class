@@ -1,0 +1,14 @@
+sic  dele N253_CO_TMB.45m
+file out N253_CO_TMB.45m s
+lmv  N253_CO_TMB.45m 
+
+
+file in b_receptors_class.30m
+
+find
+get f 
+
+
+file in  N253_CO_TMB.45m
+find 
+
