@@ -1,4 +1,6 @@
-
+! aim: to define windows automatically using Gaussian fitting results in the CO data at the same location (+- 5" area). 
+!      to automatically do the qualification using RMS ratio (measured/theoretical) and the Allan deviation (measured/theoretical) 
+!      to output a qualify.dat file for future use 
 
 
 define double spec_number redshift 
@@ -29,6 +31,7 @@ file in  N253_CO_TMB.45m_recenter.45m
 find
 sic dele test.jcmt
 file out test.jcmt s  
+say "#index Allan_deviation Rms_ratio "
 sic out quality.dat
 for i 1 to spec_number 
     get i

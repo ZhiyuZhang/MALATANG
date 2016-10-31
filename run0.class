@@ -1,9 +1,9 @@
 ! Aim: re-organise the CO datacube to be the same as the HCN/HCO+ data. 
-! Shift the frequency to be observed frequency 
-! shift the centre to to be the same as JCMT data 
-! output a new file containing both JCMT data and 45m data. 
-! CO data is from 
-! http://www.nro.nao.ac.jp/~nro45mrt/download/COatlas/data/n253/N253RD_TMB.FITS.gz
+!      Shift the frequency to be observed frequency 
+!      shift the centre to to be the same as JCMT data 
+!      output a new file containing both JCMT data and 45m data. 
+!
+! CO data is from ! http://www.nro.nao.ac.jp/~nro45mrt/download/COatlas/data/n253/N253RD_TMB.FITS.gz
 ! -- pmozhang@gmail.com 
 
 
