@@ -2,6 +2,10 @@
 
 ## Part-1  convert JCMT file format to CLASS format 
 
+test data: 
+71.202
+/home/malatang/2015raw/20151202/a20151202_00030_01_0001.sdf
+
 initialisation.sh : use Starlink to convert sdf to fits, get coordinates and
 system temperature for each subscan and each receptor 
 
