@@ -7,6 +7,13 @@ in 71.202
 
 /home/malatang/2015raw/20151202/a20151202_00030_01_0001.sdf
 
+
+### USEAGE: 
+
+    1). ./initialisation 
+    2). ipython convert_JCMT_to_sdfits.py  
+    1). class @ convert_fits_to_class.class  
+
 initialisation.sh : use Starlink to convert sdf to fits, get coordinates and
 system temperature for each subscan and each receptor 
 
@@ -17,15 +24,10 @@ receptor
 convert_fits_to_class.class : use CLASS to read all fits files (each subscan
 and each receptor) into a CLASS file (.jcmt) 
 
-### USEAGE: 
 
-    1). ./initialisation 
-    2). ipython convert_JCMT_to_sdfits.py  
-    1). class @ convert_fits_to_class.class  
+TODO: 
 
-
-
-    TODO: 1).remove temperary files 
+          1).remove temperary files 
           2). input output variables 
           3). more careful check  
     
