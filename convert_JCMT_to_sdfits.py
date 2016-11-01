@@ -26,28 +26,10 @@ from   astropy.io import ascii
 from   astropy.convolution import Gaussian1DKernel, convolve
 
 
+Tsys_hd = np.loadtxt("AllTsys.dat",delimiter=",")
 
-# change return to space 
-cmd0  = r"cat AllTsys.dat | tr  '\n' ' ' > AllTsys1.dat" 
-# change ) to the return character 
-cmd1  = r"sed -i '' 's/)/\'$'\n''/g' AllTsys1.dat" 
-# delete the first line
-cmd2  = r"sed -i.bak -e '1d' AllTsys1.dat" 
-# change E to the return character 
-cmd3  = r"sed -i '' 's/E/\'$'\n''/g' AllTsys1.dat" 
-# delete the last line
-cmd4  = r"sed -i '' '$ d' AllTsys1.dat > AllTsys.dat"   
-cmd5  = r"rm AllTsys*"   
-
-
-os.system(cmd0) 
-os.system(cmd1) 
-os.system(cmd2) 
-os.system(cmd3) 
-os.system(cmd4) 
-
-Tsys_hd = np.loadtxt("AllTsys1.dat",delimiter=",")
-os.system(cmd5) 
+cmd  = r"rm AllTsys*"   
+os.system(cmd) 
 
 filename = 'a20151202_00030_01_0001.fits'
 spec     = fits.open(filename)
@@ -55,10 +37,15 @@ spec.info()
 header   = spec[0].header
 data     = spec[0].data 
 
+print("It takes a while, please wait.")
+
+
+
 subscans_num  = data.shape[0] 
 receptors_num = data.shape[1] 
 channels_num  = data.shape[2]
 
+np.savetxt('numbers.dat', data.shape, delimiter=',') 
 
 receptor_location_file  = 'receptors_cat.FIT'
 location                =  fits.open(receptor_location_file)[1].data
@@ -119,7 +106,7 @@ for i in range(0, subscans_num):
         header_out['scan-num'] = header['OBSNUM'] 
         header_out['OBJECT']   = header['OBJECT'] 
 
-        header_out['LINE    '] = header['MOLECULE']+header['TRANSITI']
+        header_out['LINE    '] = header['MOLECULE']+header['TRANSITI'].replace(" ", "")
         header_out['RESTFREQ'] = header['RESTFRQ']  
         header_out['VLSR    '] = header['VELOSYS']*10 # in mm/s
         header_out['IMAGFREQ'] = header['IMAGFREQ'] # Hz
