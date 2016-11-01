@@ -17,6 +17,12 @@ receptor
 convert_fits_to_class.class : use CLASS to read all fits files (each subscan
 and each receptor) into a CLASS file (.jcmt) 
 
+### USEAGE: 
+
+    1). ./initialisation 
+    2). ipython convert_JCMT_to_sdfits.py  
+    1). class @ convert_fits_to_class.class  
+
 
 
     TODO: 1).remove temperary files 
