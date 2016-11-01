@@ -2,6 +2,10 @@
 ! --     These fits files are produced by convert_JCMT_fits.py 
 ! --     pmozhang@gmail.com 
 ! --     last update: 01 Nov 2016  
+!        useage: 
+!         
+!        @ convert_fits_to_class.class output_name  !(without .jcmt)
+
 ! --     TODO: read a tale file for the size (subscan numbers and receptor numbers)
 !              read the central position 
 
