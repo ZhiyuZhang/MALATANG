@@ -3,7 +3,8 @@
 ## Part-1  convert JCMT file format to CLASS format 
 
 test data: 
-71.202
+in 71.202
+
 /home/malatang/2015raw/20151202/a20151202_00030_01_0001.sdf
 
 initialisation.sh : use Starlink to convert sdf to fits, get coordinates and
@@ -18,12 +19,24 @@ and each receptor) into a CLASS file (.jcmt)
 
 
 
+    TODO: 1).remove temperary files 
+          2). input output variables 
+          3). more careful check  
+    
+
+
 ## Part-2 test automated pipeline for quality control
 Test file: between eye inspection and autotag code.
 
 /malatang/documents/JCMT_Harp_ndf2fits_to_GILDAS_CLASS_format_Conversion/demo/NGC253/20160722/dataset_20151202_00030_HCN/b_receptors_class.30m
 
-执行run.class, 调用run0.class 和run1.class 
+
+方法：使用Nobeyama 45m 的CO 数据得到合理的 window范围，对HCN每个位置的数据自动设置window，同时使用理论和实测rms 差别以及Allan variation 来判断谱线质量并打分.
+
+
+使用： 
+
+执行run.class( 调用run0.class 和run1.class )
 
 
 ! CO data: 
@@ -35,6 +48,12 @@ Test file: between eye inspection and autotag code.
 @ run0.class  ! align the CO data to the HCN data 
 
 @ run1.class  ! baseline subtraction, and qualify the data, output qualify.dat 
+
+
+    TODO: 1). smartly cut edge channels 
+          2). output qualified spectra (instead of an array file). 
+          3). more statistic analysis (Histogram fitting, find outliers, and more)  for the output array. 
+
 
 
 
