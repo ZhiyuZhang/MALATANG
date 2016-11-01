@@ -1,0 +1,5 @@
+! CO data: 
+! Nobeyama CO atlas survey
+! http://www.nro.nao.ac.jp/~nro45mrt/download/COatlas/data/n253/N253RD_TMB.FITS.gz
+@ run0.class  ! align the CO data to the HCN data 
+@ run1.class  ! baseline subtraction, and qualify the data, output qualify.dat 

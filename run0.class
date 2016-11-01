@@ -1,0 +1,63 @@
+! Aim: re-organise the CO datacube to be the same as the HCN/HCO+ data. 
+!      Shift the frequency to be observed frequency 
+!      shift the centre to to be the same as JCMT data 
+!      output a new file containing both JCMT data and 45m data. 
+!
+! CO data is from ! http://www.nro.nao.ac.jp/~nro45mrt/download/COatlas/data/n253/N253RD_TMB.FITS.gz
+! -- pmozhang@gmail.com 
+
+
+define double spec_number redshift 
+define double l b off_ra off_dec  
+define double sm_times input_reso
+define double rms_theory rms_measured rms_allan  rms_ori rrms allan 
+define char   infile*128 outfile*128 reffile*128 
+define double N I0 V0 Dv N_out I0_out V0_out Dv_out
+
+set var gauss read
+set weight eq
+
+let input_reso 20 ! km/s
+let redshift 0.000811 
+
+sic  dele N253_CO_TMB.45m
+file out N253_CO_TMB.45m s
+lmv  N253RD_TMB.FITS 
+
+file in b_receptors_class.30m
+
+find
+get f 
+let l 'R%HEAD%POS%LAM*12./pi' 
+let b 'R%HEAD%POS%BET*180./pi'
+
+!  old help of modify position
+!  http://cds.u-strasbg.fr/vizier/doc/man/gildas/hlp/class-help-las.hlp
+!  If the coordinate system is EQuatorial:
+!         lambda = lambda_0 x 12 /pi
+!         beta   = beta_0   x 180/pi
+!   If the coordinate system is GALactic:
+!         lambda = lambda_0 x 180/pi
+!         beta   = beta_0   x 180/pi
+
+
+
+let spec_number found 
+
+
+sic dele N253_CO_TMB.45m_recenter.45m 
+file out N253_CO_TMB.45m_recenter.45m s
+copy
+
+! --------- re-position the reference position of the CO data 
+! --- to the same as the HCN data 
+file in  N253_CO_TMB.45m
+find 
+
+for i 1 to found
+    get idx%num[i] 
+    modify position l b 
+    modify freq '115271.2018/(1+redshift)'
+    write i+spec_number 
+next 
+!------------------------------------------------------------------
