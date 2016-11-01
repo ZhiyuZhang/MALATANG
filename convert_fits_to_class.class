@@ -1,0 +1,15 @@
+define double l b 
+sic dele rec1.jcmt 
+file out rec1.jcmt s
+
+
+for i 0 to 252-1
+    for j 0 to 13 
+        fits read test_scan'i'_rec'j'.fits 
+        let l 0.2071813957791946*12./pi
+        let b  -0.4413434270245550*180./pi
+        modi position  l b 
+        write i*14+j+1
+    next 
+next
+
