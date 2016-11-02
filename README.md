@@ -69,9 +69,12 @@ Useage:
 
     @flag_idx.class  input.jcmt  N   ! N means how many polygons you want to use for setting windows
 
-    firstly set a polygon to set window for all spectra 
+    firstly set a polygon to set window for all spectra: click four corners of setting window regions. 
 
-    Then start data quality inspection and flagging (selection). 
+    Then start data quality inspection and flagging (selection). -- when you
+    find some regions with bad data, please click the upper side then the lower
+    side of this region. Then the code will automatically neglect this region
+    in the output. 
 
 
 
