@@ -62,7 +62,16 @@ http://www.nro.nao.ac.jp/~nro45mrt/download/COatlas/data/n253/N253RD_TMB.FITS.gz
           3). more statistic analysis (Histogram fitting, find outliers, and more)  for the output array. 
 
 
+----------------------------
+## Part-3 A semi-manual interactive pipeline for data quality inspection 
 
+Useage: 
+
+    @flag_idx.class  input.jcmt  N   ! N means how many polygons you want to use for setting windows
+
+    firstly set a polygon to set window for all spectra 
+
+    Then start data quality inspection and flagging (selection). 
 
 
 

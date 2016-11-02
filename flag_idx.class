@@ -1,0 +1,134 @@
+!!! ------ written by Zhiyu Zhang 
+!!! ------  pmozhang@gmail.com 
+!!! ------  base /index does not handle well with noise for all spectra, so you
+!!! ------  might have to loop the filling for multiple time, when you have very 
+!!! ------  large values in edge channels 
+!!! ------  usage: 
+!!! ------  @flag_idx.class  input.jcmt  N   ! N means how many polygons you want to use for setting windows 
+!!! ------  last update:  24 Dec. 2015
+!!! ------  last update:  02 Nov. 2016  optimise for JCMT data 
+
+
+if file("xxx.jcmt").EQ.TRUE then
+system "rm xxx.jcmt "
+endif 
+
+set  action i
+set  mode x t
+set  unit  v
+define char fname*50
+
+! -------define regions 
+define real x_left x_right idx_low idx_high  idx_min idx_max x_min x_max 
+! ----- define how many polygon regions for flagging  
+define   inte pols 
+! read filename and polygon numbers from input 
+let      fname &1 
+let      pols  &2
+
+file in 'fname' 
+find
+get   first   ! --get velocity range 
+load /no      ! load the data 
+plot /index   ! plot the data 
+set win /pol pols  ! 
+
+
+! -------endless loop (until Q to quit) 
+for /while 1.EQ.1
+SET  ACTION I
+
+base /index
+load /no
+plot /index
+
+say "Please click the lower left corner" 
+say "Press Q twice to quit" 
+
+g\draw relocate
+
+compute idx_max max   idx%IND
+compute idx_min min   idx%IND
+compute x_max   max   rx 
+compute x_min   min   rx 
+
+let   x_left  use_CURS[1]
+let idx_low use_CURS[2]
+
+if       x_left.lt.x_min then
+    let  x_left x_min
+else if  x_left.gt.x_max then
+    let  x_left x_max
+endif 
+
+if      idx_low.lt.idx_min then
+    let idx_low idx_min
+else if idx_low.gt.idx_max then
+    let idx_low idx_max
+endif 
+
+
+!say 'use_CURS[1]'
+!say 'use_CURS[2]'
+g\set mark 2 2 2 0
+g\dra mark  x_left idx_low  /u
+g\set mark 2 2 2 90
+g\dra mark  x_left idx_low  /u
+
+
+
+say "Please click the upper right corner" 
+say "Way out --> Q" 
+g\draw relocate
+
+let   x_right  use_CURS[1]
+let   idx_high use_CURS[2]
+
+
+if       x_right.lt.x_min then
+     let x_right x_min
+else if  x_right.gt.x_max then
+     let x_right x_max
+endif 
+
+
+if      idx_high.lt.idx_min then
+    let idx_high idx_min
+else if idx_high.gt.idx_max then
+    let idx_high idx_max
+endif 
+
+
+! --------if press 'Q', quit immediately -----------  
+if (cursor_code.eq."Q") then 
+   say "I like Baozi, how about your?"
+   set action O
+   break
+endif 
+! -------------------------------------------------
+
+base /index
+file out xxx.jcmt s 
+for i 1 to found 
+ get idx%num[i]
+ base /obs
+   if (i.gt.idx_low.and.i.lt.idx_high).or.(i.lt.idx_low.and.i.gt.idx_high)  then
+   
+       if (x_left.EQ.x_min).and.(x_right.EQ.x_max) then
+       else 
+           fill x_left x_right /noise !blank
+           write i
+       endif 
+   else 
+           write i
+   endif 
+next 
+
+system "mv xxx.jcmt "'fname'"-output.jcmt" 
+file in 'fname'"-output.jcmt" 
+find 
+load /no
+pl /index  
+next
+
+sic dele window-*.pol*
