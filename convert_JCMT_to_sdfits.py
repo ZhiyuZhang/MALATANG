@@ -28,6 +28,9 @@ from   astropy.convolution import Gaussian1DKernel, convolve
 
 Tsys_hd = np.loadtxt("AllTsys.dat",delimiter=",")
 
+Exp_time_hd = np.loadtxt("All_on_time.dat",delimiter=",")
+
+
 cmd  = r"rm AllTsys*"   
 os.system(cmd) 
 
@@ -53,7 +56,8 @@ location                =  fits.open(receptor_location_file)[1].data
 
 for i in range(0, subscans_num):
     for k in range(0, receptors_num):
-        Tsys                   =  Tsys_hd[i*14 + k]
+        Tsys                   = Tsys_hd[i*14 + k]
+        EXP_time               = Exp_time_hd[i]
         location_RA            = location[i*14 + k][1]
         location_dec           = location[i*14 + k][2]
         receptor_name          = location[i*14 + k][3]
@@ -115,7 +119,7 @@ for i in range(0, subscans_num):
         header_out['DATE-RED'] = header['DATE'] 
         header_out['TIMESYS']  = 'UTC' 
 
-        header_out['OBSTIME '] = header['INT_TIME']/subscans_num  # s
+        header_out['OBSTIME '] = EXP_time # s
         header_out['TAU-ATM '] = header['TAU225ST']
         header_out['BEAMEFF '] = header['ETAL']
         header_out['FORWEFF '] = 1
