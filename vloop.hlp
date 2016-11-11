@@ -1,0 +1,20 @@
+1 VLOOP 
+       VLOOP Arg1 
+       example:
+       file in xxx.30m
+       find /source xxx /line xx /tel xxx 
+       vloop velocity_resolution_for_your_estimate  
+       Vloop is an interactive class code for inspecting spectral quality. 
+       There are two baseline quality parameters for the estimate: 
+       Rrms and Allan (variation). 
+       Rrms is the ratio of the measured rms to the theoretical rms noise, both
+       on the user specified velocity resolutions, calculated using Tsys,
+       integration time, and the type of the receivers.  
+       Allan variation is the ratio of the measured rms to the theoretical rms
+       noise, by smoothing the spectral to the user specified velocity
+       resolution. 
+       Both parameters should be very close to 1 or slightly higher than one.
+       If there are some large values very higher than 1, normally the baseline
+       is not flat. 
+       This is a detailed description of MYCOMMAND.
+1 ENDOFHELP
