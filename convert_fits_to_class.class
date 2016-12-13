@@ -10,7 +10,8 @@
 !              read the central position 
 
 define char   outputname*128 
-define double l  b             ! lambda and beta 
+define double l  b   lref bref          ! lambda and beta 
+
 define integ subscan_num receptor_num 
 
 let outputname &1
@@ -21,12 +22,16 @@ let subscan_num  x[1]
 let receptor_num x[2]
 
 
+fits read test_scan0_rec0.fits 
+let lref lambda 
+let bref beta
+
 
 for i 0 to subscan_num-1
     for j 0 to receptor_num-1 
         fits read test_scan'i'_rec'j'.fits 
-        let l     0.2071813957791946*12./pi
-        let b  -0.4413434270245550*180./pi
+        let l     lref*12./pi
+        let b     bref*180./pi
         modi position  l b 
         write i*14+j+1
     next 
