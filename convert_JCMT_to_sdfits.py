@@ -81,8 +81,8 @@ for i in range(0, subscans_num):
 #       header_out['BLANK   '] = np.int(2147483647)
         header_out['BSCALE  '] = 1.0
         header_out['BZERO   '] = 0.0 
-        header_out['DATAMIN '] = np.max(spectrum)
-        header_out['DATAMAX '] = np.min(spectrum)
+        header_out['DATAMIN '] = np.nanmax(spectrum)
+        header_out['DATAMAX '] = np.nanmin(spectrum)
 
         header_out['BUNIT   '] = 'K'
 
