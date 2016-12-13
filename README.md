@@ -12,7 +12,8 @@ in 71.202
 # UPDATE 13 Dec. 2016: 
 
 Now in linux/mac, just copy the script files to the data folder and run:
-./all_convert.sh 
+
+    ./all_convert.sh 
 
 There you go (get all the .jcmt files in CLASS format).
 
@@ -36,9 +37,9 @@ and each receptor) into a CLASS file (.jcmt)
 
 TODO: 
 
-          1).remove temperary files 
-          2). input output variables 
-          3). more careful check  
+          1). remove temperary files -- Done 
+          2). input output variables -- Done  
+          3). more careful check     -- half done 
     
 
 ----------------------------
@@ -66,9 +67,10 @@ http://www.nro.nao.ac.jp/~nro45mrt/download/COatlas/data/n253/N253RD_TMB.FITS.gz
     @ run1.class  ! baseline subtraction, and qualify the data, output qualify.dat 
 
 
-    TODO: 1). smartly cut edge channels 
+    TODO: 1). smartly cut edge channels  -- almost done  
           2). output qualified spectra (instead of an array file). 
           3). more statistic analysis (Histogram fitting, find outliers, and more)  for the output array. 
+          4). check the discripance between resolution and channel width. -- done  
 
 
 ----------------------------
