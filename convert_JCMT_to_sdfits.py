@@ -26,6 +26,7 @@ from   astropy.io import ascii
 from   astropy.convolution import Gaussian1DKernel, convolve
 
 
+
 Tsys_hd = np.loadtxt("AllTsys.dat",delimiter=",")
 
 Exp_time_hd = np.loadtxt("All_on_time.dat",delimiter=",")
@@ -34,7 +35,8 @@ Exp_time_hd = np.loadtxt("All_on_time.dat",delimiter=",")
 cmd  = r"rm AllTsys*"   
 os.system(cmd) 
 
-filename = 'a20151202_00030_01_0001.fits'
+filename = str(sys.argv[1])
+print(filename)
 spec     = fits.open(filename)
 spec.info()
 header   = spec[0].header

@@ -10,9 +10,9 @@ in 71.202
 
 ### USEAGE: 
 
-    1). ./initialisation 
-    2). ipython convert_JCMT_to_sdfits.py  
-    1). class @ convert_fits_to_class.class  
+    1). ./initialisation a20151202_00030_01_0001.sdf 
+    2). ipython convert_JCMT_to_sdfits.py a20151202_00030_01_0001.fits  
+    1). class @ convert_fits_to_class.class  NGC253_a20151202_00030_01_0001
 
 initialisation.sh : use Starlink to convert sdf to fits, get coordinates and
 system temperature for each subscan and each receptor 
