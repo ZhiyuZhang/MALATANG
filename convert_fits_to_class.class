@@ -36,7 +36,7 @@ let bref beta
 for i 0 to subscan_num-1
     for j 0 to receptor_num-1 
         fits read test_scan'i'_rec'j'.fits 
-        let l     lref*12./pi  ! test 
+        let l     lref*12./pi  ! relocate the reference position of all sub files 
         let b     bref*180./pi
         modi position  l b 
         write i*14+j+1   ! -- loop each 14 receptors and each subscan
