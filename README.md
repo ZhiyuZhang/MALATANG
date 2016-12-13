@@ -8,10 +8,19 @@ in 71.202
 /home/malatang/2015raw/20151202/a20151202_00030_01_0001.sdf
 
 
-### USEAGE: 
+#----------------
+# UPDATE 13 Dec. 2016: 
 
-    1). ./initialisation a20151202_00030_01_0001.sdf 
-    2). ipython convert_JCMT_to_sdfits.py a20151202_00030_01_0001.fits  
+Now in linux/mac, just copy the script files to the data folder and run:
+./all_convert.sh 
+
+There you go (get all the .jcmt files in CLASS format).
+
+
+### or, if you like to run each script individually: 
+
+    1). ./initialisation                            a20151202_00030_01_0001.sdf 
+    2). ipython convert_JCMT_to_sdfits.py           a20151202_00030_01_0001.fits  
     1). class @ convert_fits_to_class.class  NGC253_a20151202_00030_01_0001
 
 initialisation.sh : use Starlink to convert sdf to fits, get coordinates and

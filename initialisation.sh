@@ -1,9 +1,10 @@
 #kappa
 #smurf 
 #convert
-
+#----------------------------------------------------------
 # if you are using Mac, please install rename command 
 # brew install rename
+#---------------------------------------------------------
 
 . $KAPPA_DIR/kappa.sh > /dev/null
 . $SMURF_DIR/smurf.sh > /dev/null

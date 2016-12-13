@@ -12,7 +12,7 @@
 define char   outputname*128            ! name of the output file 
 define double l  b   lref bref          ! lambda and beta 
 
-define subscan_num receptor_num  ! subscan numbers and receptor numbers 
+define int subscan_num receptor_num  ! subscan numbers and receptor numbers 
 
 let outputname &1
 sic dele 'outputname'.jcmt 
@@ -49,4 +49,5 @@ next
 
 sic dele test_*.fits 
 sic dele numbers.dat 
-
+sic dele jcmt_cube.sdf
+exit
