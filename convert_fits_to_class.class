@@ -45,6 +45,17 @@ next
 
 ! -------------------------------------------------------------
 
+!  old help of modify position
+!  http://cds.u-strasbg.fr/vizier/doc/man/gildas/hlp/class-help-las.hlp
+!  If the coordinate system is EQuatorial:
+!         lambda = lambda_0 x 12 /pi
+!         beta   = beta_0   x 180/pi
+!   If the coordinate system is GALactic:
+!         lambda = lambda_0 x 180/pi
+!         beta   = beta_0   x 180/pi
+
+
+
 
 
 sic dele test_*.fits 
