@@ -12,7 +12,8 @@
 
 define inte times 
 define double input_reso 
-say "please input the velocity resolution (km/s) you want to calculate Allan and Rrms"
+say "Please input the comparing velocity resolution (km/s)"
+say "for calculating the Allan and Rrms parameters"
 let input_reso &1  
 
 !!!!!!!!!initialization 
