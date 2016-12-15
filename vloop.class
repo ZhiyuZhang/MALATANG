@@ -38,10 +38,12 @@ base /pl
 !!!!!!!!!!!!!!!!!!!!sub-procedures!!!!!!!!!!!!!!!!!!!!!
 begin procedure rms
 analyse\draw text 20 14 "Rrms:             "
-analyse\draw text 22 14 'nint(sigma/(Tsys*1.04*1.23/sqrt(abs(freq_step*1e6*time)) * sqrt(1+ 1/sqrt(3*3) ) )*100)/100'
+analyse\draw text 22 14 'nint(sigma/1.22/(Tsys*1.04*1.23/sqrt(abs(freq_step*1e6*time)) * sqrt(1+ 1/sqrt(3*3) ) )*100)/100 '
+
 ! The rms noise is estimated following the webpage:
 ! http://www.eaobservatory.org/jcmt/instrumentation/heterodyne/observing-modes/#Duration 
 ! 3*3 is the 3x3 jiggle pattern we did during the observations 
+! The last 1.22 is for the conversion from sin(x)/x FWHM. The channel width is 1/1.22 times of the velocity/freq resolution.  
 analyse\draw window
 end procedure rms 
 
