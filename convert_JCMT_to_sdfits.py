@@ -114,9 +114,8 @@ for i in range(0, subscans_num):
 
         header_out['LINE    '] = header['MOLECULE']+header['TRANSITI'].replace(" ", "")
         header_out['RESTFREQ'] = header['RESTFRQ']/(1+header['ZSOURCE'])  
-        # RESTFRQ in JCMT is the real rest frequency. while in gildas, RESTFREQ is the frequency of the reference channel.
-        # we calculate rest freq using the redshift of the target. 
-        header_out['VLSR    '] = header['VELOSYS']*10 # in mm/s
+#       header_out['VLSR    '] = header['VELOSYS']*10 # in mm/s
+        header_out['VLSR    '] = 0                    # in mm/s change it to zero, to fit with gildas
         header_out['IMAGFREQ'] = header['IMAGFREQ'] # Hz
         header_out['TSYS    '] = Tsys
         header_out['DATE-OBS'] = header['DATE'] 
