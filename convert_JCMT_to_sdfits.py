@@ -113,7 +113,7 @@ for i in range(0, subscans_num):
         header_out['OBJECT']   = header['OBJECT'] 
 
         header_out['LINE    '] = header['MOLECULE']+header['TRANSITI'].replace(" ", "")
-        header_out['RESTFREQ'] = header['RESTFRQ']  
+        header_out['RESTFREQ'] = header['RESTFRQ']/(1+header['ZSOURCE'])  
         header_out['VLSR    '] = header['VELOSYS']*10 # in mm/s
         header_out['IMAGFREQ'] = header['IMAGFREQ'] # Hz
         header_out['TSYS    '] = Tsys
