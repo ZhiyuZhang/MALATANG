@@ -1,5 +1,57 @@
-! CO data: 
+! reference file: CO data: 
 ! Nobeyama CO atlas survey
 ! http://www.nro.nao.ac.jp/~nro45mrt/download/COatlas/data/n253/N253RD_TMB.FITS.gz
-@ run0.class  ! align the CO data to the HCN data 
-@ run1.class  ! baseline subtraction, and qualify the data, output qualify.dat 
+!
+! pmozhang@gmail.com 
+! usage: 
+!  @ run molecule redshift jcmt_file reference_file velocity_resolution_for_qualify weak_or_not 
+!  @ run HCN 0.001711 M83_a20160622_00043_01_0001.jcmt N5236RD_J2000.FITS  20 .TRUE. 
+!  or 
+!  @ run HCOP 0.001711 M83_a20160622_00043_01_0001.jcmt none 20 .TRUE. 
+!   
+!  molecule can select HCN or HCO+ for the rest frequencies 
+!  reference file is the name of the .fits file, but you need to lmv an output class format first 
+!            if there is no reference .fits file, then please set it to none, then the code automatically 
+!            recognises it and set window -100 100 accordingly.  
+!  velocity_resolution_for_qualify is the velocity resolution for the baseline qualification  
+!  weak_or_not: if .TRUE. then weak line, then do not set window using the CO data during the qualification 
+!                                         but still set CO window in the last baseline subtraction step 
+!               if .False. then strong line, then set window using the CO data both in qualification 
+!                                         and in the last baseline subtraction step.
+! ----------------------------------------------------------------------
+!  Note: two folders are needed for the qualification : tagged, quality 
+!  tagged will contain all the tagged (qualified) data. 
+!  quality will contain all the plots of the qualification and the quality data of each spectrum. 
+!  
+!  last update:  
+!  04 Jan 2017 -Zhiyu Zhang 
+
+
+
+define double HCNft  HCOPft  redshift veloreso restfreq
+define char infile*128 incofile*128 line*50 
+define logical weak
+
+let line     &1  
+let redshift &2 
+let infile   &3 
+let incofile &4 
+let veloreso &5
+let weak     &6 
+
+let HCNft   354505.476 ! MHz 
+let HCOPft  356734.288 ! MHz 
+if line.eq."HCN" then
+    let restfreq HCNft 
+else if line.eq."HCOP" then
+    let restfreq HCOPft 
+endif
+
+exam incofile 
+exam veloreso
+
+@ run0.class 'restfreq' 'redshift' 'infile'  'incofile'  'veloreso' 'weak'  ! switch the HCN/HCO+ data to relative velocity frame 
+@ run1.class 'restfreq' 'redshift' 'infile'  'incofile'  'veloreso' 'weak'  ! qualify all data and output qualify.dat 
+@ run2.class 'restfreq' 'redshift' 'infile'  'incofile'  'veloreso' 'weak'  ! analysis spectral qualities and output plots  
+@ run3.class 'restfreq' 'redshift' 'infile'  'incofile'  'veloreso' 'weak'  ! final baseline subtraction with CO reference data 
+

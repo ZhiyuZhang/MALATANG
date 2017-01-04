@@ -1,0 +1,21 @@
+define log weak
+define char abc*128
+
+!let  weak &1
+!
+!if weak.ne.(.TRUE.) then
+!    say "False"
+!else
+!    say "TRUE"
+!endif 
+
+
+let  abc &1
+
+if abc.ne."none"  then
+    say "False"
+else
+    say "TRUE"
+endif 
+
+pause

@@ -1,0 +1,16 @@
+! script for quality control. 
+! see help in run.class 
+@ run HCN 0.004240   a20151210_00022_01_0001.jcmt   none   20 .TRUE.
+@ run HCN 0.004240   a20151210_00023_01_0001.jcmt   none   20 .TRUE.     
+@ run HCN 0.004240   a20151216_00032_01_0001.jcmt   none   20 .TRUE. 
+@ run HCN 0.004240   a20151216_00033_01_0001.jcmt   none   20 .TRUE. 
+@ run HCN 0.004240   a20151230_00009_01_0001.jcmt   none   20 .TRUE. 
+@ run HCN 0.004240   a20160202_00009_01_0001.jcmt   none   20 .TRUE. 
+@ run HCN 0.004240   a20160204_00009_01_0001.jcmt   none   20 .TRUE. 
+@ run HCN 0.004240   a20160204_00010_01_0001.jcmt   none   20 .TRUE. 
+@ run HCN 0.004240   a20160204_00011_01_0001.jcmt   none   20 .TRUE. 
+@ run HCN 0.004240   a20160207_00007_01_0001.jcmt   none   20 .TRUE. 
+@ run HCN 0.004240   a20160207_00008_01_0001.jcmt   none   20 .TRUE. 
+@ run HCN 0.004240   a20160211_00009_01_0001.jcmt   none   20 .TRUE. 
+@ run HCN 0.004240   a20160211_00010_01_0001.jcmt   none   20 .TRUE. 
+

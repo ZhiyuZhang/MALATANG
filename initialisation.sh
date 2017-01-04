@@ -1,10 +1,9 @@
 #kappa
 #smurf 
 #convert
-#----------------------------------------------------------
+
 # if you are using Mac, please install rename command 
 # brew install rename
-#---------------------------------------------------------
 
 . $KAPPA_DIR/kappa.sh > /dev/null
 . $SMURF_DIR/smurf.sh > /dev/null
@@ -15,6 +14,7 @@ filename=$1
 
 echo $filename
 rm AllTsys.dat 
+rm All_on_time.dat
 rm AllTsys1.dat 
 rm *.fits
 rm receptors_cat.FIT
@@ -37,7 +37,7 @@ sed -i '' 's/)/\'$'\n''/g' AllTsys.dat
 # delete the first line
 sed -i '' '1d' AllTsys.dat
 # change E to the return character
-sed -i '' 's/E/\'$'\n''/g' AllTsys.dat
+sed -i '' 's/End/\'$'\n''/g' AllTsys.dat
 # delete the last line
 sed -i '' '$ d' AllTsys.dat 
 

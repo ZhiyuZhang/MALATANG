@@ -1,0 +1,135 @@
+define double HCNft  HCOPft
+define double spec_number redshift restfreq
+define double l b off_ra off_dec
+define double veloreso
+define double rms_theory rms_measured rms_allan  rms_ori rrms allan
+define char   infile*128 outfile*128 reffile*128
+define double N I0 V0 Dv N_out I0_out V0_out Dv_out
+define double win1 win2  cut1_low cut1_high  cut2_low cut2_high  cut3_low cut3_high tag_value
+define logical weak
+
+set var gauss read
+set weight eq
+
+
+let restfreq &1
+let redshift &2  ! redshift of M83
+let infile   &3
+let reffile  &4
+let veloreso &5  ! km/s
+let weak     &6  ! weak line or strong line?
+
+let HCNft   354505.476 ! MHz
+let HCOPft  356734.288 ! MHz
+if line.eq."HCN" then
+    let restfreq HCNft
+else if line.eq."HCOP" then
+    let restfreq HCOPft
+endif
+
+
+cl
+column x 1 y 2 z 3 /file quality/'infile'_quality.dat 
+!sic\sort y
+
+define double dhisto[40,2]               ! separate histogram into 40 bins 
+compute dhisto histo y 0.5 3.0           ! compute distribution between 0.5 and 2.5
+
+model   dhisto[1] dhisto[2] /regular
+set mod x 0  3 
+g\box 
+spec 
+min
+vis
+g\label "Allan" /X
+g\label "N\DC\DO\DU\DN\DT" /Y
+g\draw text 2.0 300  'infile' /u
+g\draw text 2.0 200 "Allan distribution " /u
+
+
+let cut1_high R%HEAD%GAU%NFIT[2]+R%HEAD%GAU%NFIT[3]
+let cut1_low  R%HEAD%GAU%NFIT[2]-R%HEAD%GAU%NFIT[3]
+
+
+say "Allan cut:" 'cut1_high'
+draw  L cut1_high "Cut"
+draw  L cut1_low  "Cut"
+
+hard quality/'infile'_Allan_quality.eps /over
+
+!pause 
+!---------------------------------------------------
+
+cl
+compute dhisto histo z 0.5 3.0
+
+model   dhisto[1] dhisto[2] /regular
+set mod x 0 3
+spec 
+g\box
+min
+vis
+
+g\draw text 2.0 300  'infile' /u
+g\draw text 2.0 200 "RMS distribution " /u
+g\label "Rrms" /X
+g\label "N\DC\DO\DU\DN\DT" /Y
+
+
+let cut2_low  R%HEAD%GAU%NFIT[2]-R%HEAD%GAU%NFIT[3]
+let cut2_high R%HEAD%GAU%NFIT[2]+R%HEAD%GAU%NFIT[3]
+
+
+say "Rrms cut:" 'cut2_high'
+draw  L cut2_high "Cut"
+draw  L cut2_low  "Cut"
+
+hard quality/'infile'_RRMS_quality.eps /over
+!pause
+
+cl
+column x 1 y 4 /file quality/'infile'_quality.dat 
+compute dhisto histo y 0.5 3.0           ! compute distribution between 0.5 and 2.5
+model   dhisto[1] dhisto[2] /regular
+set mod x 0  3 
+g\box 
+spec 
+min
+vis
+g\label "Goodness" /X
+g\label "N\DC\DO\DU\DN\DT" /Y
+
+
+g\draw text 2.0 300  'infile' /u
+g\draw text 2.0 200 "Goodness distribution " /u
+
+let cut3_low   R%HEAD%GAU%NFIT[2]-R%HEAD%GAU%NFIT[3]
+let cut3_high  R%HEAD%GAU%NFIT[2]+R%HEAD%GAU%NFIT[3]
+
+
+say "goodness cut:" 'cut3_high'
+draw  L cut3_low  "Cut"
+draw  L cut3_high "Cut"
+
+hard quality/'infile'_goodness_quality.eps /over
+!pause 
+
+
+sic dele tagged/'infile'_tag.jcmt 
+file out tagged/'infile'_tag.jcmt m
+file in 'infile'
+find
+for i 1 to found 
+    get idx%num[i]
+        if y[i].le.cut3_low then 
+           let tag_value  0 
+        else if  y[i].ge.cut3_high then 
+           let tag_value  9 
+        else 
+           let tag_value  '(y[i]-cut3_low)/(cut3_high-cut3_low)*8'
+        endif 
+    tag  'tag_value'
+    write i
+next 
+
+

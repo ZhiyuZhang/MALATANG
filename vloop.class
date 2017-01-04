@@ -10,7 +10,7 @@
 ! --        press ? or H in the X11 window for help 
 ! -----------------------------------------------------------------------
 
-define inte times 
+define inte 
 define double input_reso 
 say "please input the velocity resolution (km/s) you want to calculate Allan and Rrms"
 let input_reso &1  
@@ -20,10 +20,8 @@ set box d
 define character com*10
 on error next
 clear
-!set cur of
 get f
 
-let times nint(log10(abs(input_reso/velo_step))/log10(2.))
 
 pl
 if 'SET%LAS%WIND1[1]'.eq.0 then
@@ -37,253 +35,242 @@ base /pl
 
 !!!!!!!!!!!!!!!!!!!!sub-procedures!!!!!!!!!!!!!!!!!!!!!
 begin procedure rms
-analyse\draw text 20 14 "Rrms:             "
-analyse\draw text 22 14 'nint(sigma/(Tsys*1.04*1.23/sqrt(abs(freq_step*1e6*time)) * sqrt(1+ 1/sqrt(3*3) ) )*100)/100'
-! The rms noise is estimated following the webpage:
-! http://www.eaobservatory.org/jcmt/instrumentation/heterodyne/observing-modes/#Duration 
-! 3*3 is the 3x3 jiggle pattern we did during the observations 
-analyse\draw window
+    base
+    analyse\draw text 20 14 "Rrms:             "
+    analyse\draw text 22 14 'nint(sigma/1.22/(Tsys*1.04*1.23/sqrt(abs(freq_step*1e6*time)) * sqrt(1+ 1/sqrt(3*3) ) )*100)/100 '
+
+    !---------------------------------------------------------------------------------------
+    ! The rms noise is estimated following the webpage:
+    ! http://www.eaobservatory.org/jcmt/instrumentation/heterodyne/observing-modes/#Duration 
+    ! 3*3 is the 3x3 jiggle pattern we did during the observations 
+    !---------------------------------------------------------------------------------------
+    analyse\draw window
 end procedure rms 
+
+begin procedure allan 
+    define double rms_measured allan veloreso rms_allan rms_ori
+    define double N I0 V0 Dv N_out I0_out V0_out Dv_out
+    bas
+    let rms_ori 'sigma'     !------ before resample --------
+    !---------get the CO spectral information -----
+    let veloreso &1 
+    let N channels
+    let I0 reference
+    let V0 velocity
+    let Dv velo_step
+    let N_out N/abs(veloreso/Dv)*0.85
+    let I0_out (I0/N)*N_out 
+    let v0_out v0
+    let Dv_out veloreso*DV/abs(DV)
+
+    resample  N_out I0_out  v0_out Dv_out velocity
+    bas
+    let rms_measured 'sigma'         !------ after resample --------
+    let rms_allan  rms_ori/sqrt(abs(Dv_out/Dv))
+    allan = rms_measured/rms_allan
+    analyse\draw text 20 13 "Allan "
+    analyse\draw text 23 13 'nint(allan*100)/100'
+end procedure allan
+
+
+
 
 
 begin procedure drawbox
-!!!!!!!!!!!!!!!!!!!!!
-!!DRAW BOXES
-!!!!!!!!!!!!!!!!!!!!!
-pen /col 0
-greg\set box  20.1 21.9  0 2
-g\box n n n /fill 20
-pen /wei 2 /col 0
-set char 1
-g\draw tex 1 1 next /box 0
-!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!
-greg\set box  22.1 23.9  0 2
-g\box n n n /fill 20
-pen /wei 2 /col 0
-set char 1
-g\draw tex 1 1 pre /box 0
-!!!!!!!!!!!!!!!!!!!!!!!
-greg\set box  24.1 25.9  0 2
-g\box n n n /fill 20
-pen /wei 2 /col 0
-set char 1
-g\draw tex 1 1 FFT /box 0
-!!!!!!!!!!!!!!!!!!!!!
-greg\set box  20 26 15 17
-g\box n n n /fill 20
-pen /wei 2 /col 0
-set char 2
-g\draw tex 3 1 QUIT /box 0
-set char 0.6
-!!!!!!!!!!!!!!!!!!!!!
-greg\set box  10 16 15 17
-g\box n n n /fill 20
-pen /wei 2 /col 0
-set char 2
-g\draw tex 3 1 NEXT /box 0
-set char 0.6
-pen /def
-!!!!!!!!!!!!!!!!!!!!!!!!  
-greg\set box  6 9  15 17
-g\box n n n /fill 20
-pen /wei 2 /col 0
-set char 1.8
-g\draw tex 1.2 1 SM /box 0
-set char 0.6
-pen /def
+    !!!!!!!!!!!!!!!!!!!!!
+    !!DRAW BOXES
+    !!!!!!!!!!!!!!!!!!!!!
+        pen /col 0
+        greg\set box  20.1 21.9  0 2
+        g\box n n n /fill 20
+        pen /wei 2 /col 0
+        set char 1
+        g\draw tex 1 1 next /box 0
+    !!!!!!!!!!!!!!!!!!!!!
+    !!!!!!!!!!!!!!!!!!!!!
+        greg\set box  22.1 23.9  0 2
+        g\box n n n /fill 20
+        pen /wei 2 /col 0
+        set char 1
+        g\draw tex 1 1 pre /box 0
+    !!!!!!!!!!!!!!!!!!!!!!!
+        greg\set box  24.1 25.9  0 2
+        g\box n n n /fill 20
+        pen /wei 2 /col 0
+        set char 1
+        g\draw tex 1 1 FFT /box 0
+    !!!!!!!!!!!!!!!!!!!!!
+        greg\set box  20 26 15 17
+        g\box n n n /fill 20
+        pen /wei 2 /col 0
+        set char 2
+        g\draw tex 3 1 QUIT /box 0
+        set char 0.6
+    !!!!!!!!!!!!!!!!!!!!!
+        greg\set box  10 16 15 17
+        g\box n n n /fill 20
+        pen /wei 2 /col 0
+        set char 2
+        g\draw tex 3 1 NEXT /box 0
+        set char 0.6
+        pen /def
+    !!!!!!!!!!!!!!!!!!!!!!!!  
+        greg\set box  6 9  15 17
+        g\box n n n /fill 20
+        pen /wei 2 /col 0
+        set char 1.8
+        g\draw tex 1.2 1 SM /box 0
+        set char 0.6
+        pen /def
 end procedure drawbox
 
 
-begin procedure allan 
-define real sigma1 sigma2 times1  
-let times1 &1 
-bas
-let sigma1 'sigma'
-for i 1 to times1
-sm box 2
-next 
-bas
-let sigma2 'sigma'
-analyse\draw text 20 13 "allan "
-analyse\draw text 23 13 'nint(sigma2/sigma1*100 *1.414^times1)/100'
-end procedure allan
 
 for /while 1.EQ.1
-say " press S -> smooth; N -> next; P -> previous; Q -> quit; H -> help"
-!sic dele output.dat
-!list /out output.dat
-!sic out numbers.dat 
-!for ii 1 to found
-!say 'number'
-!next
-!sic out 
-@drawbox
-
-!!!!!!!!!!!!!!!!!Get cursor positions !!!!!!!!!!
-greg1\draw relocate
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get n
-if ((abs(phy_curs[1]-21).LT.1.AND.abs(phy_curs[2]-1).LT.1).OR.(abs(phy_curs[1]-12.5).LT.2.5.AND.abs(phy_curs[2]-16).LT.1)).OR.(cursor_code.eq."N") then
-       get n
-	   set box d
-       base
-       pl
-       base /pl	
-      @rms
-	  @allan 'times'
-      dra t  5 12  'scan' 
-      bas
-	  get
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get p
-else if (abs(phy_curs[1]-23).LT.1.AND.abs(phy_curs[2]-1).LT.1).OR.(cursor_code.eq."P") then
-       get  p
-	    set box d
-        base
+    say " press S -> smooth; N -> next; P -> previous; Q -> quit; H -> help"
+    @drawbox
+    !!!!!!!!!!!!!!!!!Get cursor positions !!!!!!!!!!
+    greg1\draw relocate
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get n
+    if ((abs(phy_curs[1]-21).LT.1.AND.abs(phy_curs[2]-1).LT.1).OR.(abs(phy_curs[1]-12.5).LT.2.5.AND.abs(phy_curs[2]-16).LT.1)).OR.(cursor_code.eq."N") then
+          get n
+           set box d
+           base
+           pl
+           base /pl	
+          @rms
+    	  @allan 'input_reso'
+          dra t  5 12  'scan' 
+          bas
+    	  get
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get p
+    else if (abs(phy_curs[1]-23).LT.1.AND.abs(phy_curs[2]-1).LT.1).OR.(cursor_code.eq."P") then
+           get  p
+    	    set box d
+            base
+            pl
+           	base /pl
+    	  @rms
+    	  @allan 'input_reso'
+          dra t  5 12  'scan' 
+    
+    	  bas
+    	  get
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!FFT
+    else if abs(phy_curs[1]-25).LT.1.AND.abs(phy_curs[2]-1).LT.1 then
+    		set box d
+    		base
+    		fft 
+    		@allan 'input_reso'
+    		dra
+    		pause
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!QUIT
+    else if (abs(phy_curs[1]-23).LT.3.AND.abs(phy_curs[2]-16).LT.1).OR.(cursor_code.eq."Q") then
+          set box d
+    	 break
+          base
+          set box d
+          pl
+          base /pl
+          @rms
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!DROP
+    else if (cursor_code.eq."D") then
+         pen 1
+         set char 2 
+    dra t  5 12  "Dropped" 
+         pen 0 
+         set char 0.6
+         drop
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! SMOOTHING
+    else if (abs(phy_curs[1]-7.5).LT.3.AND.abs(phy_curs[2]-16).LT.1).OR.(cursor_code.eq."S") then
+           sm 
+    	   set box d
+            pl
+           base /pl
+    		@rms
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!HELP !
+    else if (cursor_code.eq."H").OR.(cursor_code.eq."?") then
+    pen 2
+    
+    
+    !!!!!!!!!!!!!!!!!!!!!!!!
+    pen 2
+    draw t 5 10 " press S->smooth; N -> next; P -> previous; Q -> quit;  H or ? -> help"
+    draw t 5 9  " press X -> zoom in; B-> zoom out; F -> Get first; L -> Get Last; K-> drop"
+    draw t 5 8  " press [ -> Get previous 100; ] -> Get next 100"
+    draw t 5 7  " press G -> Gaussian fitting; D -> Drop current spectrum"
+    pen 0
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!Zoom in !!!!!!!!!
+    else if   cursor_code.eq."X"  then
+          set mod x
+    	  set box d
+          pl
+    !!!!!!!!!!!!!!!!!!!!!!!!!! Zoom out !!!!!!!!!!!
+    else if   cursor_code.eq."B"  then
+        set mod x t
+        set box d
         pl
-       	base /pl
-	  @rms
-	  @allan 'times'
-      dra t  5 12  'scan' 
-
-	  bas
-	  get
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!FFT
-else if abs(phy_curs[1]-25).LT.1.AND.abs(phy_curs[2]-1).LT.1 then
-		set box d
-		base
-		fft 
-		@allan 'times'
-		dra
-		pause
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!QUIT
-else if (abs(phy_curs[1]-23).LT.3.AND.abs(phy_curs[2]-16).LT.1).OR.(cursor_code.eq."Q") then
-      set box d
-	 break
-      base
-      set box d
-      pl
-      base /pl
-      @rms
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!DROP
-else if (cursor_code.eq."D") then
-     pen 1
-     set char 2 
-dra t  5 12  "Dropped" 
-     pen 0 
-     set char 0.6
-     drop
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! SMOOTHING
-else if (abs(phy_curs[1]-7.5).LT.3.AND.abs(phy_curs[2]-16).LT.1).OR.(cursor_code.eq."S") then
-       sm 
-	   set box d
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!Goto First !!!!!!!!!
+    else if   cursor_code.eq."F"  then
+          set box d
+          get f
+    	  pl
+    !!!!!!!!!!!!!!!!!!!!!!!!!! Goto Last !!!!!!!!!!!
+    else if   cursor_code.eq."L"  then
+        get l
+        set box d
         pl
-       base /pl
-		@rms
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!HELP !
-else if (cursor_code.eq."H").OR.(cursor_code.eq."?") then
-pen 2
-
-!let SATURATION 0.2
-!!!!!!!!!!!!!!!!!!!!!
-!greg\set box  5 16 10 17
-!g\box n n n /fill 20
-!pen /wei 2 /col 0
-!pen /def
-
-!!!!!!!!!!!!!!!!!!!!!!!!
-pen 2
-draw t 5 10 " press S->smooth; N -> next; P -> previous; Q -> quit;  H or ? -> help"
-draw t 5 9  " press X -> zoom in; B-> zoom out; F -> Get first; L -> Get Last; K-> drop"
-draw t 5 8  " press [ -> Get previous 100; ] -> Get next 100"
-draw t 5 7  " press G -> Gaussian fitting; D -> Drop current spectrum"
-pen 0
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Zoom in !!!!!!!!!
-else if   cursor_code.eq."X"  then
-!      set cur on
-      set mod x
-	  set box d
-      pl
-!	  set cur off
-!!!!!!!!!!!!!!!!!!!!!!!!!! Zoom out !!!!!!!!!!!
-else if   cursor_code.eq."B"  then
-set mod x t
-set box d
-pl
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!Goto First !!!!!!!!!
-else if   cursor_code.eq."F"  then
-      set box d
-      get f
-	  pl
-!!!!!!!!!!!!!!!!!!!!!!!!!! Goto Last !!!!!!!!!!!
-else if   cursor_code.eq."L"  then
-get l
-set box d
-pl
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!Next 100 !!!!!!!!!
-else if   cursor_code.eq."]"  then
-get number+100  
-set box d
-pl
-
-!!!!!!!!!!!!!!!!!!!!!!!!!! Previous 100 !!!!!!!!!!!
-else if   cursor_code.eq."["  then
-get number-100
-set box d
-pl
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Gaussian
-else if   cursor_code.eq."G"  then
-set box d
-say "Please set window " 
-pl
-set win 
-bas
-say "Please set line"
-pl
-draw win
-lines 1 ! gau
-min
-pl
-vis /pen 4
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!set win
-else if  cursor_code.eq."V"  then
-set win 
-bas
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!set win
-else if  cursor_code.eq."K"  then
-
-pen 1
-draw t 5 8  "Dropped "
-pen 0
-
-drop 
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!set win
-else if  cursor_code.eq."D"  then
-
-pen 1
-draw t 5 8  "Dropped "
-pen 0
-
-drop 
-
-
-
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!User input
-else if   cursor_code.eq."O"  then
-Break
-!!!
-else
-say "Input invalid"
-endif
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!Next 100 !!!!!!!!!
+    else if   cursor_code.eq."]"  then
+        get number+100  
+        set box d
+        pl
+    
+    !!!!!!!!!!!!!!!!!!!!!!!!!! Previous 100 !!!!!!!!!!!
+    else if   cursor_code.eq."["  then
+        get number-100
+        set box d
+        pl
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!! Gaussian
+    else if   cursor_code.eq."G"  then
+        set box d
+        say "Please set window " 
+        pl
+        set win 
+        bas
+        say "Please set line"
+        pl
+        draw win
+        lines 1 ! gau
+        min
+        pl
+        vis /pen 4
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!set win
+    else if  cursor_code.eq."V"  then
+        set win 
+        bas
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!set win
+    else if  cursor_code.eq."K"  then
+        pen 1
+        draw t 5 8  "Dropped "
+        pen 0
+        drop 
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!set win
+    else if  cursor_code.eq."D"  then
+        pen 1
+        draw t 5 8  "Dropped "
+        pen 0
+        drop 
+    !!!!!!!!!!!!!!!!!!!!!!!!!!User input
+    else if   cursor_code.eq."O"  then
+        Break
+    !!!!!!!!!!!!!!!!!!!!!!!!!!User input
+    else
+        say "Input invalid"
+    endif
 next   
 
 

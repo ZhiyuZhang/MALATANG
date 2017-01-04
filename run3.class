@@ -1,0 +1,108 @@
+
+! aim: to define windows automatically using Gaussian fitting results in the CO data at the same location (+- 5" area). 
+on error continue 
+define double HCNft  HCOPft
+define double spec_number redshift restfreq  
+define double l b off_ra off_dec  
+define double veloreso
+define double rms_theory rms_measured rms_allan  rms_ori rrms allan 
+define char   infile*128 outfile*128 reffile*128 
+define double N I0 V0 Dv N_out I0_out V0_out Dv_out
+define double win1 win2
+define logical weak
+
+set var gauss read
+set weight eq
+
+let restfreq &1
+let redshift &2 ! redshift of M83
+let infile   &3
+let reffile  &4
+let veloreso &5 ! km/s
+let weak     &6  ! weak line or strong line?
+
+file in  tagged/'infile'_tag.jcmt
+find /q 9
+let spec_number found 
+get f
+let l 'R%HEAD%POS%LAM*12./pi'
+let b 'R%HEAD%POS%BET*180./pi'
+
+! ---------------------------   write HCN data  -------------------------
+!                       after correcting rest frequency
+sic dele 'infile'_combine_45m_recenter.jcmt 
+file out 'infile'_combine_45m_recenter.jcmt s
+copy
+
+! -----------------------------------------------------------------------
+
+! -----------------------------------------------------------------------
+! --------- re-position the reference position of the CO data
+!   write out to the same file:  'infile'_combine_45m_recenter.jcmt
+if reffile.ne."none" then
+    file in  'reffile'.45m
+    find /q 9
+    
+    for i 1 to found
+        get idx%num[i]
+        modify position l b                            !position
+        modify freq '115271.2018/(1+redshift)'         !frequency
+        set mod x t
+        write i+spec_number
+    next
+!------------------------------------------------------------------
+    
+! ---------get the CO line information 
+    file in 'infile'_combine_45m_recenter.jcmt 
+    find /q 9
+    
+    sic dele tagged/'infile'_tag_base.jcmt
+    file out tagged/'infile'_tag_base.jcmt s 
+    
+    for i 1 to spec_number 
+        get i
+        !---------get the CO data in the same position -----
+        let off_ra  off_lambda
+        let off_dec off_beta 
+        find /range off_ra-10 off_ra+10  off_dec-10 off_dec+10 /number spec_number+1 * /q 9
+        ave
+        set win   -200 200 
+        set mod x -380 380 
+    
+        base 
+        pl 
+        min
+        vis
+    
+        let win1 R%HEAD%GAU%NFIT[2]-R%HEAD%GAU%NFIT[3]
+        let win2 R%HEAD%GAU%NFIT[2]+R%HEAD%GAU%NFIT[3]
+    
+    ! ----------------------------------------
+    ! now we have the line centre and the Gaussian width of the CO data.  
+    !-----------------------------------------
+    ! -------------- now we qualify the spectra using the window (also the baselines) defined by the CO data.  
+        find /q 9
+        get i
+        pl
+        set win win1 win2
+        base 
+        write i
+        draw win
+        sic wait 0.1 
+    next
+    
+    sic dele tagged/'infile'_tag.jcmt
+    sic dele 'infile'_combine_45m_recenter.jcmt 
+else
+    sic dele tagged/'infile'_tag_base.jcmt
+    file out tagged/'infile'_tag_base.jcmt s 
+ 
+    for i 1 to spec_number 
+        get i
+        set win   -200 200 
+        set mod x -380 380 
+    
+        base 
+        write i
+    next
+endif 

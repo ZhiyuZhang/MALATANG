@@ -2,23 +2,39 @@
 !      to automatically do the qualification using RMS ratio (measured/theoretical) and the Allan deviation (measured/theoretical) 
 !      to output a qualify.dat file for future use 
 
-
-define double spec_number redshift 
+define double HCNft  HCOPft
+define double spec_number redshift restfreq  
 define double l b off_ra off_dec  
-define double sm_times input_reso
+define double veloreso
 define double rms_theory rms_measured rms_allan  rms_ori rrms allan 
 define char   infile*128 outfile*128 reffile*128 
 define double N I0 V0 Dv N_out I0_out V0_out Dv_out
-define double win1 win2
+define double win1 win2 goodness
+define logical weak 
+
 
 set var gauss read
 set weight eq
 
-let input_reso 20 ! km/s
-let redshift 0.000811 
+
+let restfreq &1
+let redshift &2 ! redshift of M83
+let infile   &3
+let reffile  &4
+let veloreso &5 ! km/s
+let weak     &6 ! 
+
+let HCNft   354505.476 ! MHz
+let HCOPft  356734.288 ! MHz
+if line.eq."HCN" then
+    let restfreq HCNft
+else if line.eq."HCOP" then
+    let restfreq HCOPft
+endif
 
 
-file in b_receptors_class.30m
+
+file in 'infile'
 find
 
 let spec_number found 
@@ -27,75 +43,113 @@ define double allan_array[spec_number]
 define double rrms_array[spec_number]
     
 ! ---------get the CO line information 
-file in  N253_CO_TMB.45m_recenter.45m 
+file in  'reffile'.45m_recenter.45m
 find
-sic dele test.jcmt
-file out test.jcmt s  
+
+!sic dele 'infile'_based.jcmt
+!file out 'infile'_based.jcmt s  
+
 say "#index Allan_deviation Rms_ratio "
-sic out quality.dat
+sic out quality/'infile'_quality.dat
 for i 1 to spec_number 
     get i
+
     !---------get the CO spectral information -----
     let N channels 
     let I0 reference 
     let V0 velocity
     let Dv velo_step
-    let N_out N/(input_reso/Dv)*0.9  
-    let I0_out N_out/2+0.5  
+    let N_out N/abs(veloreso/Dv)*0.85  
+    let I0_out (I0/N)*N_out !+ 0.5  
     let v0_out v0
-    let Dv_out input_reso 
+    let Dv_out veloreso*DV/abs(DV)
 
-    !---------get the CO data in the same position -----
-    let off_ra  off_lambda
-    let off_dec off_beta 
-    find /range off_ra-5 off_ra+5  off_dec-5 off_dec+5 /number spec_number+1 *
-    ave
-    set win -200 200 
-    set mod x -400 400 
+
+    !-----------------------------------------
+    ! For strong lines, we base using the line window using the CO data,
+    !-----------------------------------------
+    ! For weak lines, we base using line widow of 0 0 to get the baseline quality. 
+    ! Then we need to set window later again, using the CO data. 
+    !-------------- now we qualify the spectra using the window (also the baselines) defined by the CO data.  
+
+
+    if weak.EQ.(.FALSE.) then 
+            !--------------------------------------------------
+            !---------get the CO data in the same position -----
+            let off_ra  off_lambda
+            let off_dec off_beta 
+            find /range off_ra-5 off_ra+5  off_dec-5 off_dec+5 /number spec_number+1 *
+            ave
+            set win   -100 100 
+            set mod x -380 380 
+
+            base 
+            pl 
+            min
+            vis
+            let win1 R%HEAD%GAU%NFIT[2]-R%HEAD%GAU%NFIT[3]
+            let win2 R%HEAD%GAU%NFIT[2]+R%HEAD%GAU%NFIT[3]
+            !   pause 
+            !--------------------------------------------------
+            ! now we have the line centre and the Gaussian width of the CO data.  
+            !-----------------------------------------
+            set win win1 win2
+            get i
+    else
+            set win 0 0 
+    endif 
+
+
+    set mod x -380 380 
+
+    ! ------- get noise with original resolution  -------------
 
     base 
-    min
-!   pause 
-    let win1 R%HEAD%GAU%NFIT[2]-R%HEAD%GAU%NFIT[3]
-    let win2 R%HEAD%GAU%NFIT[2]+R%HEAD%GAU%NFIT[3]
-    pl 
+    let rms_ori      sigma 
 
-! ----------------------------------------
-! now we have the line centre and the Gaussian width of the CO data.  
-!-----------------------------------------
-
-! -------------- now we qualify the spectra using the window (also the baselines) defined by the CO data.  
-    get i
-    base 
-    let rms_ori  sigma 
+    ! ------- get noise with smoothed resolution  -------------
     resample  N_out I0_out  v0_out Dv_out velocity
-
-    set win win1 win2
     base 
-    
     let rms_measured sigma 
-    let rms_theory   Tsys*1.4/sqrt(abs(freq_step*1e6*time))
+
+    !---------------------------------------------------------------------------------------
+    ! The rms noise is estimated following the webpage:
+    ! http://www.eaobservatory.org/jcmt/instrumentation/heterodyne/observing-modes/#Duration
+    ! 3*3 is the 3x3 jiggle pattern we did during the observations
+    ! 1.22 is the difference between resolution and channel width as a sinc function 
+    ! velo_reso = 1.22 * channel_width  
+    !---------------------------------------------------------------------------------------
+
+    ! ------- get theoretical noise with smoothed resolution  -------------
+    let rms_theory  'Tsys*1.04*1.23/sqrt(abs(freq_step*1e6*time))*sqrt(1+1/sqrt(3*3))*1.22'
     let rms_allan    rms_ori/sqrt(Dv_out/Dv) 
     let rrms         rms_measured/rms_theory 
     let allan        rms_measured/rms_allan 
-    let rrms_array[i] rrms
+    let goodness     rrms*allan
+    let rrms_array[i]  rrms
     let allan_array[i] allan 
-    analyse\draw text 20 13 "allan "
-    analyse\draw text 23 13 'nint(allan*100)/100'
-    analyse\draw text 20 14 "Rrms:             "
-    analyse\draw text 22 14 'nint(rrms*100)/100'
-    write i
-    spec /pen 1
-    draw win
-    sic wait 0.1 
-    say 'i' 'allan' 'rrms' 
+
+!------------------------------------------------------------------------------
+!   analyse\draw text 20 13 "Allan: "
+!   analyse\draw text 23 13 'nint(allan*100)/100'
+!   analyse\draw text 20 14 "Rrms:  "
+!   analyse\draw text 22 14 'nint(rrms*100)/100'
+!   spec /pen 1
+!   draw win
+!------------------------------------------------------------------------------
+
+!   sic wait 0.1 
+    say 'i' 'allan' 'rrms'  'goodness'
+
+!   get  i
+!   base 
+!   write i
 next
 sic out 
 
-pause 
+!pause 
 !python
 !Sic.setgdict(globals())
 !np.max(allan_array)
-
 
 

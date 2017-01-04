@@ -1,13 +1,20 @@
 ! ------ Aim: convert all fits files (for each subscan and each receptor) into a single file in CLASS format. 
 ! --     These fits files are produced by convert_JCMT_fits.py 
 ! --     pmozhang@gmail.com 
-! --     last update: 01 Nov 2016  
+!
 !        useage: 
 !         
 !        @ convert_fits_to_class.class output_name  !(without .jcmt)
 
-! --     TODO: read a tale file for the size (subscan numbers and receptor numbers)
-!              read the central position 
+! -- last updates:   
+! -- 01 Nov 2016     read numbers.dat for the subscan numbers and Tsys                
+! -- 04 Jan 2017     add reference  position lref bref which are:
+!                    lambda =  RA /180  * Pi
+!                    beta   =  Dec /180 * Pi
+!                    this position is for all files, can could be calculated using coordinates in NED or in the reference fits file
+
+
+on error next
 
 define char   outputname*128            ! name of the output file 
 define double l  b   lref bref          ! lambda and beta 
@@ -24,11 +31,18 @@ let subscan_num  x[1]
 let receptor_num x[2]
 ! --------------------------------------------------------------
 
+
 ! --------- read the reference coordinate from the file of the first scan and first receptor------
-fits read test_scan0_rec0.fits 
-let lref lambda 
-let bref beta
+fits read test_scan0_rec0.fits
+let lref  1.652904254092157   !read from the Heracles data file
+let bref  1.367505933853467  !
 ! --------------------------------------------------------------
+
+!LAS> exam lambda
+!LAMBDA          =     1.652904254092157      ! Double  GLOBAL
+!LAS> exam beta
+!BETA            =     1.367505933853467      ! Double  GLOBAL
+ 
 
 
 ! ---------for each file (each receptor, each subscan), read in the file and convert it to the class format ---------   
@@ -45,20 +59,13 @@ next
 
 ! -------------------------------------------------------------
 
-!  old help of modify position
-!  http://cds.u-strasbg.fr/vizier/doc/man/gildas/hlp/class-help-las.hlp
-!  If the coordinate system is EQuatorial:
-!         lambda = lambda_0 x 12 /pi
-!         beta   = beta_0   x 180/pi
-!   If the coordinate system is GALactic:
-!         lambda = lambda_0 x 180/pi
-!         beta   = beta_0   x 180/pi
 
 
-
-
-
+sic dele test_*rec1*.fits 
+sic dele test_*rec2*.fits 
 sic dele test_*.fits 
+
+
 sic dele numbers.dat 
 sic dele jcmt_cube.sdf
 exit
