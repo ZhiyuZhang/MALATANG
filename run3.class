@@ -92,7 +92,6 @@ if reffile.ne."none" then
     next
     
     sic dele tagged/'infile'_tag.jcmt
-    sic dele 'infile'_combine_45m_recenter.jcmt 
 else
     sic dele tagged/'infile'_tag_base.jcmt
     file out tagged/'infile'_tag_base.jcmt s 
@@ -106,3 +105,7 @@ else
         write i
     next
 endif 
+
+
+sic dele 'infile'_combine_45m_recenter.jcmt 
+
