@@ -15,9 +15,9 @@ In linux/mac, please copy the script files to the data folder and run:
 
 ### usage:
      ./all_convert.sh RA Dec
-     Here RA and Dec are in  Radian (J2000 )
-### Example (for NGC 6946):
-     ./all_convert.sh 308.71791667      60.15388889
+     Here RA and Dec are in  Radian (Equatorial J2000 ), found in NED or in reference CO files. 
+### Example (for NGC 253):
+     ./all_convert.sh 11.888002  -25.288220 
 
 The rest should be automatic and you will get all .jcmt files in the CLASS format.
 
