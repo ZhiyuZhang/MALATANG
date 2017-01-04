@@ -22,7 +22,7 @@ There you go (get all the .jcmt files in CLASS format).
 
     1). ./initialisation                            a20151202_00030_01_0001.sdf 
     2). ipython convert_JCMT_to_sdfits.py           a20151202_00030_01_0001.fits  
-    1). class @ convert_fits_to_class.class  NGC253_a20151202_00030_01_0001
+    1). class @ convert_fits_to_class.class         a20151202_00030_01_0001
 
 initialisation.sh : use Starlink to convert sdf to fits, get coordinates and
 system temperature for each subscan and each receptor 
@@ -33,6 +33,27 @@ receptor
 
 convert_fits_to_class.class : use CLASS to read all fits files (each subscan
 and each receptor) into a CLASS file (.jcmt) 
+
+Note: 
+1). 
+If you use Mac, please install rename by :
+
+        brew install rename 
+
+2). convert_JCMT_to_sdfits.py
+uses python 3.5, please install it using anaconda:
+https://www.continuum.io/downloads
+
+Please install the plugins (most of them are installed by anaconda by default):
+
+    matplotlib
+    scipy 
+    numpy
+    astropy
+
+3). please specify the coordinate of the reference position in convert_fits_to_class.class  
+
+    Please see the note header in convert_fits_to_class.class 
 
 
 TODO: 
@@ -51,25 +72,28 @@ Test file: between eye inspection and autotag code. in 71.202
 
 /malatang/documents/JCMT_Harp_ndf2fits_to_GILDAS_CLASS_format_Conversion/demo/NGC253/20160722/dataset_20151202_00030_HCN/b_receptors_class.30m
 
-
-方法：使用Nobeyama 45m 的CO 数据得到合理的 window范围，对HCN每个位置的数据自动设置window，同时使用理论和实测rms 差别以及Allan variation 来判断谱线质量并打分.
+Method: 
+    1) use CO mapping data (e.g. Nobeyama 45m CO survey ) as reference, for setting windows (line free channels) in the baseline subtraction.  
+    2). Use the ratios of theoritical rms and measured rms and the allan variation to qualify each spectrum.
 
 CO data: Nobeyama CO atlas survey 
     
 http://www.nro.nao.ac.jp/~nro45mrt/download/COatlas/data/n253/N253RD_TMB.FITS.gz
 
-
-使用： 执行run.class( 调用run0.class 和run1.class )
-
-
+Useage: 
+    class @ qualify.class 
+    
+    qualify.class calls run.class which calls the following: 
 
     @ run0.class  ! align the CO data to the HCN data 
     @ run1.class  ! baseline subtraction, and qualify the data, output qualify.dat 
+    @ run2.class 
+    @ run3.class 
 
 
-    TODO: 1). smartly cut edge channels  -- almost done  
-          2). output qualified spectra (instead of an array file). 
-          3). more statistic analysis (Histogram fitting, find outliers, and more)  for the output array. 
+    TODO: 1). automatically cut edge channels  -- done  
+          2). output qualified spectra         -- done. 
+          3). more statistic analysis (Histogram fitting, find outliers, and more)  for the output array. -- done. 
           4). check the discripance between resolution and channel width. -- done  
 
 
