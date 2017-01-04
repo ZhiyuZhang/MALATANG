@@ -85,10 +85,36 @@ Useage:
     
     qualify.class calls run.class which calls the following: 
 
-    @ run0.class  ! align the CO data to the HCN data 
-    @ run1.class  ! baseline subtraction, and qualify the data, output qualify.dat 
-    @ run2.class 
-    @ run3.class 
+    @ run0.class  ! switch the HCN/HCO+ data to relative velocity frame
+    @ run1.class  ! qualify all data and output qualify.dat
+    @ run2.class  ! analysis spectral qualities and output plots
+    @ run3.class  ! final baseline subtraction with CO reference data
+
+
+
+
+      usage:
+      @ run molecule redshift jcmt_file reference_file velocity_resolution_for_qualify weak_or_not
+    
+      molecule:        
+                      Molecule to select HCN or HCO+ for the rest frequencies
+      reference_file:  
+                      The name of the .fits file, but you need to lmv an output class format first if there is no reference .fits file, then please set it to none, then the code automatically recognises it and set window -100 100 accordingly.
+
+      velocity_resolution_for_qualify:  
+                      The velocity resolution for the baseline qualification
+      weak_or_not: 
+                      if .TRUE. then weak line, then do not set window using the CO data during the qualification but still set CO window in the last baseline subtraction step
+                      if .False. then strong line, then set window using the CO data both in qualification and in the last baseline subtraction step.
+     ----------------------------------------------------------------------
+      Note: two folders are needed for the qualification : tagged, quality
+      tagged will contain all the tagged (qualified) data.
+      quality will contain all the plots of the qualification and the quality data of each spectrum
+    
+
+
+
+
 
 
     TODO: 1). automatically cut edge channels  -- done  
