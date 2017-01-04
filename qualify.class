@@ -1,16 +1,40 @@
 ! script for quality control. 
-! see help in run.class 
-@ run HCN 0.004240   a20151210_00022_01_0001.jcmt   none   20 .TRUE.
-@ run HCN 0.004240   a20151210_00023_01_0001.jcmt   none   20 .TRUE.     
-@ run HCN 0.004240   a20151216_00032_01_0001.jcmt   none   20 .TRUE. 
-@ run HCN 0.004240   a20151216_00033_01_0001.jcmt   none   20 .TRUE. 
-@ run HCN 0.004240   a20151230_00009_01_0001.jcmt   none   20 .TRUE. 
-@ run HCN 0.004240   a20160202_00009_01_0001.jcmt   none   20 .TRUE. 
-@ run HCN 0.004240   a20160204_00009_01_0001.jcmt   none   20 .TRUE. 
-@ run HCN 0.004240   a20160204_00010_01_0001.jcmt   none   20 .TRUE. 
-@ run HCN 0.004240   a20160204_00011_01_0001.jcmt   none   20 .TRUE. 
-@ run HCN 0.004240   a20160207_00007_01_0001.jcmt   none   20 .TRUE. 
-@ run HCN 0.004240   a20160207_00008_01_0001.jcmt   none   20 .TRUE. 
-@ run HCN 0.004240   a20160211_00009_01_0001.jcmt   none   20 .TRUE. 
-@ run HCN 0.004240   a20160211_00010_01_0001.jcmt   none   20 .TRUE. 
+!  Usage:  
+!  @ run molecule redshift jcmt_file reference_file velocity_resolution_for_qualify weak_or_not
+!  Example:   
+!  @ run HCN 0.001711 M83_a20160622_00043_01_0001.jcmt N5236RD_J2000.FITS  20 .TRUE.
+!  @ run HCN 0.001711 M83_a20160622_00043_02_0001.jcmt N5236RD_J2000.FITS  20 .TRUE.
+!  @ run HCN 0.001711 M83_a20160622_00043_03_0001.jcmt N5236RD_J2000.FITS  20 .TRUE.
+!  ... 
+!
+!  or
+!
+!  @ run HCOP 0.001711 M83_a20160622_00043_01_0001.jcmt none 20 .TRUE.
+!  @ run HCOP 0.001711 M83_a20160622_00043_02_0001.jcmt none 20 .TRUE.
+!  @ run HCOP 0.001711 M83_a20160622_00043_03_0001.jcmt none 20 .TRUE.
+!  ...
+!---------------------------------------------------------------------
+!
+!  Details: 
+!  molecule can select HCN or HCO+ for the rest frequencies
+!  reference file is the name of the .fits file, but you need to lmv an output class format first
+!            if there is no reference .fits file, then please set it to none, then the code automatically
+!            recognises it and set window -100 100 accordingly.
+!  velocity_resolution_for_qualify is the velocity resolution for the baseline qualification
+!  weak_or_not: if .TRUE. then weak line, then do not set window using the CO data during the qualification
+!                                         but still set CO window in the last baseline subtraction step
+!               if .False. then strong line, then set window using the CO data both in qualification
+!                                         and in the last baseline subtraction step.
+! ----------------------------------------------------------------------
+!                     Important  Note: 
+! ----------------------------------------------------------------------
+!  two folders are needed for the qualification : tagged, quality
+!  tagged will contain all the tagged (qualified) data.
+!  quality will contain all the plots of the qualification and the quality data of each spectrum.
+!-----------------------------------------------------------------------
+
+
+@ run HCN 0.000811  a20151202_00030_01_0001.jcmt   N253RD_TMB.FITS    20 .TRUE.
+
+
 
