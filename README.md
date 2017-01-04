@@ -1,6 +1,10 @@
 # MALATANG
 
 ## Part-1  convert JCMT file format to CLASS format 
+###--------------------------
+### UPDATE 04 Jan. 2017: 
+###--------------------------
+
 
 test data: 
 in 71.202
@@ -8,8 +12,6 @@ in 71.202
 /home/malatang/2015raw/20151202/a20151202_00030_01_0001.sdf
 
 
-#----------------
-# UPDATE 04 Jan. 2017: 
 
 In linux/mac, please copy the script files to the data folder and run:
 
@@ -69,21 +71,20 @@ TODO:
 ----------------------------
 ## Part-2 test automated pipeline for quality control
 
-Test file: between eye inspection and autotag code. in 71.202
+###--------------------------
+### UPDATE 04 Jan. 2017: 
+###--------------------------
 
+### Method: 
 
-
-/malatang/documents/JCMT_Harp_ndf2fits_to_GILDAS_CLASS_format_Conversion/demo/NGC253/20160722/dataset_20151202_00030_HCN/b_receptors_class.30m
-
-Method: 
     1) use CO mapping data (e.g. Nobeyama 45m CO survey ) as reference, for setting windows (line free channels) in the baseline subtraction.  
     2). Use the ratios of theoritical rms and measured rms and the allan variation to qualify each spectrum.
 
 CO data: Nobeyama CO atlas survey 
     
-http://www.nro.nao.ac.jp/~nro45mrt/download/COatlas/data/n253/N253RD_TMB.FITS.gz
+    http://www.nro.nao.ac.jp/~nro45mrt/download/COatlas/data/n253/N253RD_TMB.FITS.gz
 
-Useage: 
+### Useage: 
     class @ qualify.class 
     
     qualify.class calls run.class which calls the following: 
@@ -96,7 +97,8 @@ Useage:
 
 
 
-      usage:
+### Details :
+
       @ run molecule redshift jcmt_file reference_file velocity_resolution_for_qualify weak_or_not
     
       molecule:        
