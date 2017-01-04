@@ -9,20 +9,23 @@ in 71.202
 
 
 #----------------
-# UPDATE 13 Dec. 2016: 
+# UPDATE 04 Jan. 2017: 
 
-Now in linux/mac, just copy the script files to the data folder and run:
+In linux/mac, please copy the script files to the data folder and run:
 
-    ./all_convert.sh 
+### usage:
+     ./all_convert.sh RA Dec
+     Here RA and Dec are in  Radian (J2000 )
+### Example (for NGC 6946):
+     ./all_convert.sh 308.71791667      60.15388889
 
-There you go (get all the .jcmt files in CLASS format).
-
+The rest should be automatic and you will get all .jcmt files in the CLASS format.
 
 ### or, if you like to run each script individually: 
 
     1). ./initialisation                            a20151202_00030_01_0001.sdf 
     2). ipython convert_JCMT_to_sdfits.py           a20151202_00030_01_0001.fits  
-    1). class @ convert_fits_to_class.class         a20151202_00030_01_0001
+    1). class @ convert_fits_to_class.class         a20151202_00030_01_0001   RA Dec 
 
 initialisation.sh : use Starlink to convert sdf to fits, get coordinates and
 system temperature for each subscan and each receptor 
@@ -85,7 +88,7 @@ Useage:
     
     qualify.class calls run.class which calls the following: 
 
-    @ run0.class  ! switch the HCN/HCO+ data to relative velocity frame
+    @ run0.class  ! switch the HCN/HCOP data to relative velocity frame
     @ run1.class  ! qualify all data and output qualify.dat
     @ run2.class  ! analysis spectral qualities and output plots
     @ run3.class  ! final baseline subtraction with CO reference data
@@ -97,7 +100,7 @@ Useage:
       @ run molecule redshift jcmt_file reference_file velocity_resolution_for_qualify weak_or_not
     
       molecule:        
-                      Molecule to select HCN or HCO+ for the rest frequencies
+                      Molecule to select HCN or HCOP for the rest frequencies
       reference_file:  
                       The name of the .fits file, but you need to lmv an output class format first if there is no reference .fits file, then please set it to none, then the code automatically recognises it and set window -100 100 accordingly.
 

@@ -18,10 +18,16 @@ on error next
 
 define char   outputname*128            ! name of the output file 
 define double l  b   lref bref          ! lambda and beta 
-
 define int subscan_num receptor_num  ! subscan numbers and receptor numbers 
 
-let outputname &1
+let outputname  &1
+let lref        &2
+let bref        &3 
+
+let lref  lref/180.0*Pi    !read from the Heracles data file
+let bref  bref/180.0*Pi    !
+
+
 sic dele 'outputname'.jcmt 
 file out 'outputname'.jcmt s
 
@@ -33,16 +39,9 @@ let receptor_num x[2]
 
 
 ! --------- read the reference coordinate from the file of the first scan and first receptor------
-fits read test_scan0_rec0.fits
-let lref  1.652904254092157   !read from the Heracles data file
-let bref  1.367505933853467  !
+!fits read test_scan0_rec0.fits
 ! --------------------------------------------------------------
 
-!LAS> exam lambda
-!LAMBDA          =     1.652904254092157      ! Double  GLOBAL
-!LAS> exam beta
-!BETA            =     1.367505933853467      ! Double  GLOBAL
- 
 
 
 ! ---------for each file (each receptor, each subscan), read in the file and convert it to the class format ---------   

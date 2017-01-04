@@ -100,7 +100,7 @@ for i 1 to spec_number
     endif 
 
 
-    set mod x -380 380 
+    set mod x -360 360 
 
     ! ------- get noise with original resolution  -------------
 
