@@ -37,8 +37,8 @@ compute dhisto histo y 0.5 3.0           ! compute distribution between 0.5 and 
 
 model   dhisto[1] dhisto[2] /regular
 set mod x 0  3 
-g\box 
 spec 
+g\box 
 min
 vis
 g\label "Allan" /X
