@@ -1,0 +1,211 @@
+! aim: !      to automatically do the qualification using RMS ratio (measured/theoretical) and the Allan deviation (measured/theoretical) 
+!      to output a qualify.dat file for future use 
+!      to output quality plots in quality folder 
+!      to output qualified spectral files in tagged folder  
+!      
+! Example: @ qualify.class E-097.A-0973A-2016-2016-04-06.apex 20           SPT0125-50 AP-G101-XF02 
+!                     filename                          velo_resolution source_name   spectrometer 
+!
+!  written by Zhi-Yu Zhang pmozhang@gmail.com
+!  last update: 06 Mar 2017 
+
+define double spec_number 
+define double veloreso
+define double rms_theory rms_measured rms_allan  rms_ori rrms allan 
+define char   infile*128 outfile*128 reffile*128  sname*128  spectrometer*128
+define double N I0 V0 Dv N_out I0_out V0_out Dv_out
+define double win1 win2 goodness  cut1_low cut1_high  cut2_low cut2_high  cut3_low cut3_high tag_value
+
+set var gauss read
+set weight eq
+
+
+let infile       &1  ! file name 
+let veloreso     &2  ! spectral resolution in km/s
+let sname        &3  ! source name 
+let spectrometer &4  ! name of the spectrometer 
+
+
+file in 'infile'
+
+find   /source 'sname'  /tel 'spectrometer'
+
+
+let spec_number found 
+
+define double allan_array[spec_number]
+define double rrms_array[spec_number]
+    
+
+
+sic out quality/'infile'_'spectrometer'_'sname'_quality.dat
+say "! index Allan_deviation   Rms_ratio   goodness"
+for i 1 to spec_number 
+    get idx%num[i]
+
+    !---------get the CO spectral information -----
+    let N channels 
+    let I0 reference 
+    let V0 velocity
+    let Dv velo_step
+    let N_out N/abs(veloreso/Dv)*0.85  
+    let I0_out (I0/N)*N_out !+ 0.5  
+    let v0_out v0
+    let Dv_out veloreso*DV/abs(DV)
+
+! Note: it only works for weak lines, and I set window to be 0 0, which automatically uses all channels for statistics 
+!--------------
+    set win 0 0 
+    set mod x t 
+!---------
+
+
+    ! ------- get noise with original resolution  -------------
+
+    base 
+    let rms_ori      sigma 
+
+    ! ------- get noise with smoothed resolution  -------------
+    resample  N_out I0_out  v0_out Dv_out velocity
+    base 
+    let rms_measured sigma 
+
+    !---------------------------------------------------------------------------------------
+    ! The rms noise is estimated following the webpage:
+    ! 
+    ! 
+    ! 
+    !
+    !---------------------------------------------------------------------------------------
+
+    ! ------- get theoretical noise with smoothed resolution  -------------
+    let rms_theory  '1.4*Tsys/sqrt(abs(freq_step*1e6*time))'
+    let rms_allan    rms_ori/sqrt(Dv_out/Dv) 
+    let rrms         rms_measured/rms_theory 
+    let allan        rms_measured/rms_allan 
+    let goodness     rrms*allan
+    let rrms_array[i]  rrms
+    let allan_array[i] allan 
+
+    !------------------------------------------------------------------------------
+    !   analyse\draw text 20 13 "Allan: "
+    !   analyse\draw text 23 13 'nint(allan*100)/100'
+    !   analyse\draw text 20 14 "Rrms:  "
+    !   analyse\draw text 22 14 'nint(rrms*100)/100'
+    !   spec /pen 1
+    !   draw win
+    !   sic wait 0.1 
+    !------------------------------------------------------------------------------
+     
+    say 'idx%num[i]' 'allan' 'rrms'  'goodness'
+
+next
+sic out 
+
+
+
+cl
+column x 1 y 2 z 3 /file quality/'infile'_'spectrometer'_'sname'_quality.dat 
+
+define  double dhisto[40,2]               ! separate histogram into 40 bins 
+compute dhisto histo y 0.5 3.0           ! compute distribution between 0.5 and 2.5
+model   dhisto[1] dhisto[2] /regular
+
+set mod x 0  3 
+spec 
+g\box 
+min
+vis
+g\label "Allan" /X
+g\label "N\DC\DO\DU\DN\DT" /Y
+g\draw text 2.0 300  'infile' /u
+g\draw text 2.0 200 "Allan distribution " /u
+
+
+let cut1_high R%HEAD%GAU%NFIT[2]+R%HEAD%GAU%NFIT[3]
+let cut1_low  R%HEAD%GAU%NFIT[2]-R%HEAD%GAU%NFIT[3]
+
+
+say "Allan cut:" 'cut1_high'
+draw  L cut1_high "Cut"
+draw  L cut1_low  "Cut"
+
+hard quality/'infile'_'spectrometer'_'sname'_Allan_quality.eps /over
+
+
+cl
+compute dhisto histo z 0.5 3.0
+
+model   dhisto[1] dhisto[2] /regular
+set mod x 0 3
+spec 
+g\box
+min
+vis
+
+g\draw text 2.0 300  'infile' /u
+g\draw text 2.0 200 "RMS distribution " /u
+g\label "Rrms" /X
+g\label "N\DC\DO\DU\DN\DT" /Y
+
+
+let cut2_low  R%HEAD%GAU%NFIT[2]-R%HEAD%GAU%NFIT[3]
+let cut2_high R%HEAD%GAU%NFIT[2]+R%HEAD%GAU%NFIT[3]
+
+
+say "Rrms cut:" 'cut2_high'
+draw  L cut2_high "Cut"
+draw  L cut2_low  "Cut"
+
+hard quality/'infile'_'spectrometer'_'sname'_RRMS_quality.eps /over
+!pause
+
+cl
+column x 1 y 4 /file quality/'infile'_'spectrometer'_'sname'_quality.dat 
+compute dhisto histo y 0.5 3.0           ! compute distribution between 0.5 and 2.5
+model   dhisto[1] dhisto[2] /regular
+set mod x 0  3 
+g\box 
+spec 
+min
+vis
+g\label "Goodness" /X
+g\label "N\DC\DO\DU\DN\DT" /Y
+
+
+g\draw text 2.0 300  'infile' /u
+g\draw text 2.0 200 "Goodness distribution " /u
+
+let cut3_low   R%HEAD%GAU%NFIT[2]-R%HEAD%GAU%NFIT[3]
+let cut3_high  R%HEAD%GAU%NFIT[2]+R%HEAD%GAU%NFIT[3]
+
+
+say "goodness cut:" 'cut3_high'
+draw  L cut3_low  "Cut"
+draw  L cut3_high "Cut"
+
+hard quality/'infile'_'spectrometer'_'sname'_goodness_quality.eps /over
+
+
+
+
+!--------------------------------------------------
+ sic dele tagged/'infile'_'spectrometer'_'sname'_tag.apex
+ file out tagged/'infile'_'spectrometer'_'sname'_tag.apex m
+ file in 'infile'
+ find   /source 'sname'  /tel 'spectrometer'
+ 
+ for i 1 to found 
+     get idx%num[i]
+         if y[i].le.cut3_low then 
+            let tag_value  0 
+         else if  y[i].ge.cut3_high then 
+            let tag_value  9 
+         else 
+            let tag_value  '(y[i]-cut3_low)/(cut3_high-cut3_low)*8'
+         endif 
+     tag  'tag_value'
+     write 
+ next 
+!---------------------------------------------------
+
