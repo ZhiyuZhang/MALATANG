@@ -144,3 +144,37 @@ Useage:
 
 
 
+----------------------------
+###--------------------------
+### UPDATE 06 Mar. 2017:
+###--------------------------
+
+Part-4: A  generic automatic Qualification of long time integration spectral
+data (Gildas format) observed with single dish telescopes.
+
+Aims:
+- to automatically do the qualification using RMS ratio (measured/theoretical) and the Allan deviation (measured/theoretical)
+- to output a qualify.dat file for future use
+- to output quality plots in quality folder
+- to output qualified spectral files in tagged folder
+
+### Usage:
+     Example: @ qualify.class E-097.A-0973A-2016-2016-04-06.apex 20 SPT0125-50 AP-G101-XF02
+              @ qualify.class filename  velo_resolution  source_name   spectrometer
+
+----------------------------
+## Part-3 A semi-manual interactive pipeline for data quality inspection 
+
+Useage: 
+
+    @flag_idx.class  input.jcmt  N   ! N means how many polygons you want to use for setting windows
+
+    firstly set a polygon to set window for all spectra: click four corners of setting window regions. 
+
+    Then start data quality inspection and flagging (selection). -- when you
+    find some regions with bad data, please click the upper side then the lower
+    side of this region. Then the code will automatically neglect this region
+    in the output. 
+
+
+
