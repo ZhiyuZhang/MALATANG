@@ -2,7 +2,9 @@
 
 ## Part-1  convert JCMT file format to CLASS format 
 ###--------------------------
-### UPDATE 04 Jan. 2017: 
+### UPDATE 03 Oct. 2017: 
+###  revised the bug in velocity definition: 
+###  add velo or freq separation 
 ###--------------------------
 
 
@@ -161,5 +163,7 @@ Aims:
 ### Usage:
      Example: @ qualify.class E-097.A-0973A-2016-2016-04-06.apex 20 SPT0125-50 AP-G101-XF02
               @ qualify.class filename  velo_resolution  source_name   spectrometer
+
+
 
 
