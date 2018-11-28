@@ -18,10 +18,13 @@ in 71.202
 In linux/mac, please copy the script files to the data folder and run:
 
 ### usage:
-     ./all_convert.sh RA Dec
+     ./all_convert.sh coordinate.dat 
+     coordinate.dat contains RA Dec in one line 
      Here RA and Dec are in  Radian (Equatorial J2000 ), found in NED or in reference CO files. 
 ### Example (for NGC 253):
-     ./all_convert.sh 11.888002  -25.288220 
+     ./all_convert.sh coordinate.dat 
+     coordinate file: 
+     11.888002  -25.288220 
 
 The rest should be automatic and you will get all .jcmt files in the CLASS format.
 
