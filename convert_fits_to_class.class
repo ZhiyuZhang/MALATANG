@@ -16,8 +16,9 @@
 
 on error next
 
-define char   outputname*128            ! name of the output file 
-define double l  b   lref bref          ! lambda and beta 
+set var position write 
+define char   outputname*128         ! name of the output file 
+define double l  b   lref bref       ! lambda and beta 
 define int subscan_num receptor_num  ! subscan numbers and receptor numbers 
 
 let outputname  &1
@@ -51,6 +52,8 @@ for i 0 to subscan_num-1
         fits read test_scan'i'_rec'j'.fits 
         let l     lref*12./pi  ! relocate the reference position of all sub files 
         let b     bref*180./pi
+        let R%HEAD%POS%LAMOF 0
+        let R%HEAD%POS%BETOF 0
         modi position  l b 
         write i*14+j+1   ! -- loop each 14 receptors and each subscan
     next 
