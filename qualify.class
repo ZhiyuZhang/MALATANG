@@ -1,18 +1,6 @@
 ! script for quality control. 
 !  Usage:  
-!  @ run molecule redshift jcmt_file reference_file velocity_resolution_for_qualify weak_or_not
-!  Example:   
-!  @ run HCN 0.001711 M83_a20160622_00043_01_0001.jcmt N5236RD_J2000.FITS  20 .TRUE.
-!  @ run HCN 0.001711 M83_a20160622_00043_02_0001.jcmt N5236RD_J2000.FITS  20 .TRUE.
-!  @ run HCN 0.001711 M83_a20160622_00043_03_0001.jcmt N5236RD_J2000.FITS  20 .TRUE.
-!  ... 
-!
-!  or
-!
-!  @ run HCOP 0.001711 M83_a20160622_00043_01_0001.jcmt none 20 .TRUE.
-!  @ run HCOP 0.001711 M83_a20160622_00043_02_0001.jcmt none 20 .TRUE.
-!  @ run HCOP 0.001711 M83_a20160622_00043_03_0001.jcmt none 20 .TRUE.
-!  ...
+!  @ qualify redshift line  
 !---------------------------------------------------------------------
 !
 !  Details: 
@@ -34,7 +22,42 @@
 !-----------------------------------------------------------------------
 
 
-@ run HCN 0.000811  a20151202_00030_01_0001.jcmt   N253RD_TMB.FITS    20 .TRUE.
+$ls *.jcmt > file.list
+define   integer    nl
+define   double     redshift   restfreq HCNft HCOPft
+define char*50 line
+
+let      redshift   &1
+let      line       &2
+
+let HCNft   354505.476 ! MHz
+let HCOPft  356734.288 ! MHz
+if line.eq."HCN" then
+    let restfreq HCNft
+else if line.eq."HCOP" then
+    let restfreq HCOPft
+endif
+
+compute nl lines file.list
+define char*50 jcmtfile[nl]
+accept * jcmtfile /column file.list
+
+for k 1 to nl
+    file update 'jcmtfile[k]'
+    find
+     for i 1 to found
+        get idx%num[i]
+        modify freq 'restfreq/(1+redshift)'
+        update
+     next
+next
 
 
+compute nl lines file.list
+
+for k 1 to nl
+   @ run 'line' 'redshift' 'jcmtfile[k]' none 20 .TRUE.     
+next
+
+sic dele file.list
 

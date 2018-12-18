@@ -1,0 +1,35 @@
+! usage:
+! modifyredshift redshift HCOP
+! @  modifyredshift 0.001 HCOP
+
+$ls *.jcmt > file.list
+define   integer    nl
+define   double     redshift   restfreq HCNft HCOPft
+define char*50 line
+
+let      redshift   &1
+let      line       &2
+
+let HCNft   354505.476 ! MHz
+let HCOPft  356734.288 ! MHz
+if line.eq."HCN" then
+    let restfreq HCNft
+else if line.eq."HCOP" then
+    let restfreq HCOPft
+endif
+
+compute nl lines file.list
+define char*50 jcmtfile[nl]
+accept * jcmtfile /column file.list
+
+for k 1 to nl
+    file update 'jcmtfile[k]'
+    find
+     for i 1 to found
+        get idx%num[i]
+        modify freq 'restfreq/(1+redshift)'
+        update
+     next
+next
+
+sic dele file.list

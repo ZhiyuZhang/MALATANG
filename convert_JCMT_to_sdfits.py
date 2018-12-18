@@ -66,11 +66,11 @@ location                =  fits.open(receptor_location_file)[1].data
 
 for i in range(0, subscans_num):
     for k in range(0, receptors_num):
-        Tsys                   = Tsys_hd[i*14 + k]
         EXP_time               = Exp_time_hd[i]
-        location_RA            = location[i*14 + k][1]
-        location_dec           = location[i*14 + k][2]
-        receptor_name          = location[i*14 + k][3]
+        Tsys                   =  Tsys_hd[i*receptors_num + k]
+        location_RA            = location[i*receptors_num + k][1]
+        location_dec           = location[i*receptors_num + k][2]
+        receptor_name          = location[i*receptors_num + k][3]
         spectrum               = np.full((1,1,1,channels_num),1.0)
         spectrum[0,0,0,:]      = data[i,k,:]
         spectrum               = spectrum.astype(np.float32)

@@ -14,6 +14,7 @@
 !                    this position is for all files, can could be calculated using coordinates in NED or in the reference fits file
 
 
+
 on error next
 
 set var position write 
@@ -55,7 +56,9 @@ for i 0 to subscan_num-1
         let R%HEAD%POS%LAMOF 0
         let R%HEAD%POS%BETOF 0
         modi position  l b 
-        write i*14+j+1   ! -- loop each 14 receptors and each subscan
+        MODIFY DOPPLER 0
+        modi velo      0
+        write i*receptor_num+j+1   ! -- loop each whole number of receptors and each subscan
     next 
 next
 
