@@ -7,6 +7,9 @@
 ###  add velo or freq separation 
 ###--------------------------
 
+# scipy astropy numpy
+
+
 
 test data: 
 in 71.202
